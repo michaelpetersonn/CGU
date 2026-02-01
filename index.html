@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eternal Families - Class Countdown</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Open Sans', sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+        }
+
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 800px;
+        }
+
+        .header {
+            margin-bottom: 60px;
+        }
+
+        .title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #f5d7a1 0%, #e8b86d 50%, #d4a055 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 60px rgba(232, 184, 109, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a0a0c0;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .countdown-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 50px 60px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .countdown-label {
+            font-size: 1.1rem;
+            color: #b0b0d0;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
+
+        .countdown {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .time-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 100px;
+        }
+
+        .time-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 5rem;
+            font-weight: 700;
+            line-height: 1;
+            color: #fff;
+        }
+
+        .time-label {
+            font-size: 0.9rem;
+            color: #8888a8;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 10px;
+        }
+
+        .separator {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 4rem;
+            color: #4a4a6a;
+            align-self: flex-start;
+            margin-top: 10px;
+        }
+
+        .next-class-info {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .next-class-day {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem;
+            color: #e8b86d;
+            margin-bottom: 5px;
+        }
+
+        .next-class-time {
+            color: #8888a8;
+            font-size: 1rem;
+        }
+
+        .in-class {
+            background: linear-gradient(135deg, #2d5a3d 0%, #1e4a2e 100%);
+            padding: 20px 40px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .in-class-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            color: #7dcea0;
+        }
+
+        .schedule {
+            margin-top: 60px;
+            color: #6a6a8a;
+            font-size: 0.9rem;
+        }
+
+        .schedule-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #8888a8;
+        }
+
+        @media (max-width: 600px) {
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .countdown-container {
+                padding: 30px 20px;
+            }
+
+            .time-value {
+                font-size: 3rem;
+            }
+
+            .time-block {
+                min-width: 70px;
+            }
+
+            .separator {
+                font-size: 2.5rem;
+            }
+
+            .countdown {
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <video class="video-background" id="bg-video" loop playsinline muted autoplay>
+        <source src="1AD63F94-4D44-4A64-9B62-49122083C222.MOV" type="video/quicktime">
+    </video>
+    <div class="video-overlay"></div>
+
+    <div class="container">
+        <header class="header">
+            <h1 class="title">Eternal Families</h1>
+            <p class="subtitle">REL C 200</p>
+        </header>
+
+        <div class="countdown-container">
+            <p class="countdown-label">Time until next class</p>
+            
+            <div id="countdown" class="countdown">
+                <div class="time-block">
+                    <span id="days" class="time-value">0</span>
+                    <span class="time-label">Days</span>
+                </div>
+                <span class="separator">:</span>
+                <div class="time-block">
+                    <span id="hours" class="time-value">0</span>
+                    <span class="time-label">Hours</span>
+                </div>
+                <span class="separator">:</span>
+                <div class="time-block">
+                    <span id="minutes" class="time-value">0</span>
+                    <span class="time-label">Minutes</span>
+                </div>
+                <span class="separator">:</span>
+                <div class="time-block">
+                    <span id="seconds" class="time-value">0</span>
+                    <span class="time-label">Seconds</span>
+                </div>
+            </div>
+
+            <div class="next-class-info">
+                <p id="next-class-day" class="next-class-day"></p>
+                <p id="next-class-time" class="next-class-time">12:00 PM - 12:50 PM Mountain Time</p>
+            </div>
+        </div>
+
+        <div class="schedule">
+            <p class="schedule-title">Class Schedule</p>
+            <p>Tuesday & Thursday • 12:00 PM - 12:50 PM MT</p>
+        </div>
+    </div>
+
+    <script>
+        // Video background - autoplay
+        document.getElementById('bg-video').play().catch(() => {});
+
+        // Class schedule: Tuesday (2) and Thursday (4) at 12:00 PM Mountain Time
+        const CLASS_DAYS = [2, 4]; // Tuesday = 2, Thursday = 4
+        const CLASS_START_HOUR = 12;
+        const CLASS_START_MINUTE = 0;
+        const CLASS_END_HOUR = 12;
+        const CLASS_END_MINUTE = 50;
+        const MOUNTAIN_TIMEZONE = 'America/Denver';
+
+        function getMountainTime() {
+            return new Date(new Date().toLocaleString('en-US', { timeZone: MOUNTAIN_TIMEZONE }));
+        }
+
+        function getNextClassDate() {
+            const now = getMountainTime();
+            const currentDay = now.getDay();
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+            
+            // Check if we're currently in class
+            if (CLASS_DAYS.includes(currentDay)) {
+                const isAfterStart = currentHour > CLASS_START_HOUR || 
+                    (currentHour === CLASS_START_HOUR && currentMinute >= CLASS_START_MINUTE);
+                const isBeforeEnd = currentHour < CLASS_END_HOUR || 
+                    (currentHour === CLASS_END_HOUR && currentMinute < CLASS_END_MINUTE);
+                
+                if (isAfterStart && isBeforeEnd) {
+                    return { inClass: true };
+                }
+            }
+
+            // Find the next class day
+            let daysUntilNextClass = null;
+            
+            for (let i = 0; i <= 7; i++) {
+                const checkDay = (currentDay + i) % 7;
+                
+                if (CLASS_DAYS.includes(checkDay)) {
+                    if (i === 0) {
+                        // Today is a class day - check if class hasn't started yet
+                        const classNotStarted = currentHour < CLASS_START_HOUR || 
+                            (currentHour === CLASS_START_HOUR && currentMinute < CLASS_START_MINUTE);
+                        if (classNotStarted) {
+                            daysUntilNextClass = 0;
+                            break;
+                        }
+                    } else {
+                        daysUntilNextClass = i;
+                        break;
+                    }
+                }
+            }
+
+            // Calculate the next class date/time
+            const nextClass = new Date(now);
+            nextClass.setDate(nextClass.getDate() + daysUntilNextClass);
+            nextClass.setHours(CLASS_START_HOUR, CLASS_START_MINUTE, 0, 0);
+
+            return { inClass: false, nextClass, daysUntilNextClass };
+        }
+
+        function formatDayName(date) {
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                           'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            return `${days[date.getDay()]}, ${months[date.getMonth()]} ${date.getDate()}`;
+        }
+
+        function updateCountdown() {
+            const result = getNextClassDate();
+            const countdownEl = document.getElementById('countdown');
+            const nextClassDayEl = document.getElementById('next-class-day');
+
+            if (result.inClass) {
+                countdownEl.innerHTML = `
+                    <div class="in-class">
+                        <span class="in-class-text">Class is in session!</span>
+                    </div>
+                `;
+                nextClassDayEl.textContent = 'Right now';
+                return;
+            }
+
+            const now = getMountainTime();
+            const diff = result.nextClass - now;
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('days').textContent = days;
+            document.getElementById('hours').textContent = hours;
+            document.getElementById('minutes').textContent = minutes;
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+
+            nextClassDayEl.textContent = formatDayName(result.nextClass);
+        }
+
+        // Update immediately and then every second
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>
