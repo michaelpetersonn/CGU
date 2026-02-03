@@ -28,11 +28,15 @@
 
         .video-background {
             position: fixed;
-            top: 0;
-            left: 0;
+            top: 50%;
+            left: 50%;
             width: 100%;
             height: 100%;
+            min-width: 100%;
+            min-height: 100%;
             object-fit: cover;
+            object-position: center center;
+            transform: translate(-50%, -50%);
             z-index: -2;
         }
 
@@ -46,9 +50,54 @@
             z-index: -1;
         }
 
+        .play-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 10;
+            cursor: pointer;
+            transition: opacity 0.4s ease;
+        }
+
+        .play-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .play-overlay-text {
+            padding: 16px 32px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            font-size: 1.1rem;
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+        }
+
+        .play-overlay-error {
+            padding: 20px 28px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            color: #fff;
+            text-align: center;
+            max-width: 320px;
+        }
+
         .container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
             text-align: center;
             max-width: 800px;
+            width: 100%;
         }
 
         .header {
@@ -199,10 +248,13 @@
     </style>
 </head>
 <body>
-    <video class="video-background" id="bg-video" loop playsinline muted autoplay>
-        <source src="1AD63F94-4D44-4A64-9B62-49122083C222.MOV" type="video/quicktime">
+    <video class="video-background" id="bg-video" loop playsinline muted preload="auto">
+        <source src="1AD63F94-4D44-4A64-9B62-49122083C222.mp4" type="video/mp4">
     </video>
     <div class="video-overlay"></div>
+    <div class="play-overlay" id="play-overlay" title="Click to play video">
+        <span class="play-overlay-text">Click or tap to play video</span>
+    </div>
 
     <div class="container">
         <header class="header">
@@ -248,8 +300,53 @@
     </div>
 
     <script>
-        // Video background - autoplay
-        document.getElementById('bg-video').play().catch(() => {});
+        // Video background - starts on first user interaction; overlay only hides when video actually plays
+        (function() {
+            var video = document.getElementById('bg-video');
+            var overlay = document.getElementById('play-overlay');
+            var overlayText = overlay.querySelector('.play-overlay-text');
+            var started = false;
+
+            function hideOverlay() {
+                overlay.classList.add('hidden');
+                document.removeEventListener('click', onUserInteraction);
+                document.removeEventListener('mousedown', onUserInteraction);
+                document.removeEventListener('touchstart', onUserInteraction);
+                document.removeEventListener('keydown', onUserInteraction);
+                overlay.removeEventListener('click', onUserInteraction);
+            }
+
+            function showError(msg) {
+                overlayText.className = 'play-overlay-error';
+                overlayText.textContent = msg;
+            }
+
+            video.addEventListener('playing', function() {
+                hideOverlay();
+            });
+
+            video.addEventListener('error', function() {
+                if (started) {
+                    showError('Video couldn\'t load in this browser. Try opening the page with a local server (e.g. Live Server).');
+                }
+            });
+
+            function startVideo() {
+                if (started) return;
+                started = true;
+                video.play().catch(function() {});
+            }
+
+            function onUserInteraction(e) {
+                startVideo();
+            }
+
+            overlay.addEventListener('click', onUserInteraction);
+            document.addEventListener('click', onUserInteraction);
+            document.addEventListener('mousedown', onUserInteraction);
+            document.addEventListener('touchstart', onUserInteraction, { passive: true });
+            document.addEventListener('keydown', onUserInteraction);
+        })();
 
         // Class schedule: Tuesday (2) and Thursday (4) at 12:00 PM Mountain Time
         const CLASS_DAYS = [2, 4]; // Tuesday = 2, Thursday = 4
